@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ガチャシミュレーター</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #04161c;
+            color: white;
+            font-family: 'Roboto', sans-serif;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+        .card-img {
+            width: 150px;
+            height: 200px;
+            margin: 5px;
+        }
+        .gacha-button {
+            background-color: #0066cc;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .gacha-button:hover {
+            background-color: #005bb5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container text-center mt-4">
+        <h1>ガチャシミュレーター</h1>
+        <p>運試しでランダムなカードを引きましょう！</p>
+
+        <!-- ガチャボタン -->
+        <div class="my-3">
+            <form action="{{ url_for('gacha') }}" method="post" style="display: inline;">
+                <button type="submit" class="btn btn-primary gacha-button">ガチャ (1回, 100円)</button>
+            </form>
+            <form action="{{ url_for('gacha11') }}" method="post" style="display: inline;">
+                <button type="submit" class="btn btn-secondary gacha-button">11連ガチャ (11回, 1000円)</button>
+            </form>
+            <form action="{{ url_for('gacha_premium') }}" method="post" style="display: inline;">
+                <button type="submit" class="btn btn-danger gacha-button">プレミアムガチャ (200円)</button>
+            </form>
+            <form action="{{ url_for('reset') }}" method="post" style="display: inline;">
+                <button type="submit" class="btn btn-secondary gacha-button">リセット</button>
+            </form>
+        </div>
+
+        <!-- 結果表示 -->
+        <h3>結果</h3>
+        <p>総試行回数: {{ session['attempts'] }}<br>使用金額: {{ session['money_spent'] }}円</p>
+
+        <h4>レアリティカウント:</h4>
+        <ul>
+            {% for rarity, count in session['results'].items() %}
+                <li>{{ rarity }}: {{ count }}</li>
+            {% endfor %}
+        </ul>
+
+        <!-- 最近のカードギャラリー -->
+        <h3>引いたカード</h3>
+        <div class="row">
+            {% for card in session['cards_pulled'] %}
+                {% set result = card | regex_split %}
+                {% if result %}
+                    {% set rarity, number = result %}
+                    <div class="col-md-2">
+                        <img src="{{ url_for('static', filename='images/' + rarity + '/' + rarity + ' ' + number + '.jpg') }}" alt="{{ card }}" class="img-fluid card-img">
+                        <p>{{ card }}</p>
+                    </div>
+                {% else %}
+                    <div class="col-md-2">
+                        <p>カードフォーマットエラー: {{ card }} (レアリティと番号を分割できません)</p>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+        <footer class="mt-4">
+            <p>© 2024 ガチャシミュレーター. 画像提供: <a href="http://www.jewel-s.jp/" target="_blank" style="color: lightgray;">ジュエルセイバーFREE</a>.</p>
+        </footer>
+    </div>
+</body>
+</html>

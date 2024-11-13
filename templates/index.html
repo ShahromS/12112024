@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ガチャガチャシミュレータ</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #04161c; /* Тёмно-синий фон */
+            color: white;
+            font-family: 'Roboto', sans-serif;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Тень для текста */
+        }
+        .gacha-button {
+            background-color: #0066cc;
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .gacha-button:hover {
+            background-color: #005bb5;
+        }
+        .btn-primary.gacha-button {
+            background-color: #00509e; /* Цвет для 1-гача */
+        }
+        .btn-secondary.gacha-button {
+            background-color: #0074d9; /* Цвет для 11-гача */
+        }
+        .btn-success.gacha-button {
+            background-color: #0096db; /* Цвет для кнопки просмотра карт */
+        }
+        .btn-danger.gacha-button {
+            background-color: #ff4136; /* Красный для сброса */
+        }
+        .card-table {
+            width: 100%;
+            margin-top: 20px;
+        }
+        .card-table th,
+        .card-table td {
+            text-align: left;
+            padding: 8px;
+        }
+    </style>
+</head>
+<body class="container">
+    <h1 class="mt-5">ガチャガチャシミュレータ</h1>
+
+    <!-- Кнопки для разных видов гача -->
+    <div class="my-4">
+        <form action="{{ url_for('gacha') }}" method="POST">
+            <button type="submit" class="btn btn-primary gacha-button">ガチャ (1回100円)</button>
+        </form>
+        <form action="{{ url_for('gacha11') }}" method="POST" class="mt-2">
+            <button type="submit" class="btn btn-secondary gacha-button">11連ガチャ (1回1000円)</button>
+        </form>
+        <form action="{{ url_for('reset') }}" method="POST" class="mt-2">
+            <button type="submit" class="btn btn-danger gacha-button">リセット</button>
+        </form>
+        <!-- Кнопка для перехода на страницу с результатами -->
+        <a href="{{ url_for('results') }}" class="btn btn-success gacha-button mt-2">カードを見る</a>
+    </div>
+
+    <!-- Таблица результатов -->
+    <h3>今までの結果</h3>
+    <table class="card-table">
+        <thead>
+            <tr>
+                <th>カード種類</th>
+                <th>枚数</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for rarity, count in session['results'].items() %}
+                <tr>
+                    <td>{{ rarity }}</td>
+                    <td>{{ count }}枚</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <p>合計: {{ session['attempts'] }}回引き {{ session['money_spent'] }}円使った。</p>
+
+    <footer class="mt-5">
+        <p>ジュエルセイバーFREE | URL: <a href="http://www.jewel-s.jp/" target="_blank" style="color: lightgray;">http://www.jewel-s.jp/</a></p>
+    </footer>
+
+</body>
+</html>
